@@ -5,3 +5,4 @@
 $ terraform init
 $ terraform apply    # confirm "yes"
 # outputs.invoke_url gives your POST /auth URL
+// test CI
