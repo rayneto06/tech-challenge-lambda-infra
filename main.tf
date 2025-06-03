@@ -16,15 +16,6 @@ data "aws_iam_role" "lambda_exec" {
   name = "LabRole"
 }
 
-resource "aws_lambda_function" "auth" {
-  function_name = "authByCpf"
-  filename      = data.archive_file.lambda_zip.output_path
-  handler       = var.lambda_handler
-  runtime       = var.lambda_runtime
-  role          = data.aws_iam_role.lambda_exec.arn
-  environment { variables = { JWT_SECRET = var.jwt_secret } }
-}
-
 resource "aws_api_gateway_rest_api" "auth_api" {
   name        = "authByCpfAPI"
   description = "Authenticate by CPF"
@@ -61,7 +52,7 @@ resource "aws_api_gateway_deployment" "auth_deploy" {
 resource "aws_lambda_function" "auth" {
   function_name = "authByCpf"
   filename      = data.archive_file.lambda_zip.output_path
-  handler       = var.lambda_handler    # deve ser "auth_handler.handler"
+  handler       = var.lambda_handler    # ex: "auth_handler.handler"
   runtime       = var.lambda_runtime    # ex: "nodejs18.x"
   role          = data.aws_iam_role.lambda_exec.arn
 
