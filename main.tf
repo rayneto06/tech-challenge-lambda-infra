@@ -79,10 +79,4 @@ resource "aws_iam_policy" "lambda_dynamodb" {
   })
 }
 
-# anexa a policy ao role da lambda
-resource "aws_iam_role_policy_attachment" "lambda_dynamodb_attach" {
-  role       = data.aws_iam_role.lambda_exec.name
-  policy_arn = aws_iam_policy.lambda_dynamodb.arn
-}
-
 data "aws_caller_identity" "current" {}
