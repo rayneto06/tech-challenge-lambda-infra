@@ -57,3 +57,41 @@ resource "aws_api_gateway_deployment" "auth_deploy" {
   rest_api_id = aws_api_gateway_rest_api.auth_api.id
   stage_name  = "prod"
 }
+
+resource "aws_lambda_function" "auth" {
+  function_name = "authByCpf"
+  filename      = data.archive_file.lambda_zip.output_path
+  handler       = var.lambda_handler    # deve ser "auth_handler.handler"
+  runtime       = var.lambda_runtime    # ex: "nodejs18.x"
+  role          = data.aws_iam_role.lambda_exec.arn
+
+  environment {
+    variables = {
+      JWT_SECRET      = var.jwt_secret
+      CUSTOMERS_TABLE = var.customers_table_name
+    }
+  }
+}
+
+resource "aws_iam_policy" "lambda_dynamodb" {
+  name        = "lambda-dynamodb-read-customers"
+  description = "Permite que a lambda consulte o DynamoDB Customers"
+  policy      = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect   = "Allow"
+        Action   = ["dynamodb:GetItem"]
+        Resource = "arn:aws:dynamodb:${var.aws_region}:${data.aws_caller_identity.current.account_id}:table/${var.customers_table_name}"
+      }
+    ]
+  })
+}
+
+# anexa a policy ao role da lambda
+resource "aws_iam_role_policy_attachment" "lambda_dynamodb_attach" {
+  role       = data.aws_iam_role.lambda_exec.name
+  policy_arn = aws_iam_policy.lambda_dynamodb.arn
+}
+
+data "aws_caller_identity" "current" {}

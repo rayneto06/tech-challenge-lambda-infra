@@ -16,7 +16,13 @@ variable "lambda_handler" {
   default     = "auth_handler.handler"
 }
 
+# variables.tf
 variable "jwt_secret" {
-  description = "Segredo para assinar o JWT"
   type        = string
+  description = "Segredo para assinar JWT"
+}
+
+variable "customers_table_name" {
+  type        = string
+  description = "Nome da tabela DynamoDB de clientes"
 }
