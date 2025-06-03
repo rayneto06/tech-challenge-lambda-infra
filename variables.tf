@@ -26,3 +26,9 @@ variable "customers_table_name" {
   type        = string
   description = "Nome da tabela DynamoDB de clientes"
 }
+
+variable "skip_policy_creation" {
+  description = "Se verdadeiro, ignora a criação da policy IAM no CI"
+  type        = bool
+  default     = false
+}

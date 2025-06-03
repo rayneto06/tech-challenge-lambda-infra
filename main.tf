@@ -65,18 +65,25 @@ resource "aws_lambda_function" "auth" {
 }
 
 resource "aws_iam_policy" "lambda_dynamodb" {
+  count       = var.skip_policy_creation ? 0 : 1
   name        = "lambda-dynamodb-read-customers"
   description = "Permite que a lambda consulte o DynamoDB Customers"
   policy      = jsonencode({
-    Version = "2012-10-17"
+    Version = "2012-10-17",
     Statement = [
       {
-        Effect   = "Allow"
-        Action   = ["dynamodb:GetItem"]
+        Effect   = "Allow",
+        Action   = ["dynamodb:GetItem"],
         Resource = "arn:aws:dynamodb:${var.aws_region}:${data.aws_caller_identity.current.account_id}:table/${var.customers_table_name}"
       }
     ]
   })
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_dynamodb_attach" {
+  count      = var.skip_policy_creation ? 0 : 1
+  role       = data.aws_iam_role.lambda_exec.name
+  policy_arn = aws_iam_policy.lambda_dynamodb[0].arn
 }
 
 data "aws_caller_identity" "current" {}

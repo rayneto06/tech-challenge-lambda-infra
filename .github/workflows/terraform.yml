@@ -35,4 +35,4 @@ jobs:
 
       - name: Terraform Apply
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        run: terraform apply -input=false tfplan
+        run: terraform apply -input=false -var="skip_policy_creation=true" tfplan
